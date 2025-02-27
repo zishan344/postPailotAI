@@ -1,19 +1,30 @@
-import React from "react";
-import { View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Badge, useTheme } from "react-native-paper";
+import { useNotificationStore } from "../stores/notificationStore";
 
 interface NotificationBadgeProps {
-  count: number;
+  style?: any;
 }
 
-export const NotificationBadge = ({ count }: NotificationBadgeProps) => {
+export function NotificationBadge({ style }: NotificationBadgeProps) {
+  const { unreadCount } = useNotificationStore();
   const theme = useTheme();
 
-  if (count === 0) return null;
+  if (unreadCount === 0) return null;
 
   return (
-    <View style={{ position: "absolute", top: -5, right: -5 }}>
-      <Badge size={20}>{count}</Badge>
-    </View>
+    <Badge
+      size={20}
+      style={[styles.badge, { backgroundColor: theme.colors.error }, style]}>
+      {unreadCount > 99 ? "99+" : unreadCount}
+    </Badge>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+  },
+});

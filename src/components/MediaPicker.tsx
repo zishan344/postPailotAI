@@ -1,36 +1,61 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
+import { View, Image, ScrollView, StyleSheet } from "react-native";
+import { Button, IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 
-export const MediaPicker = () => {
-  const [image, setImage] = useState<string | null>(null);
+interface MediaPickerProps {
+  onImagesChange?: (images: string[]) => void;
+}
 
-  const pickImage = async () => {
+export const MediaPicker = ({ onImagesChange }: MediaPickerProps) => {
+  const [images, setImages] = useState<string[]>([]);
+
+  const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
       quality: 1,
+      aspect: [4, 3],
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const newImages = result.assets.map((asset) => asset.uri);
+      setImages((prev) => [...prev, ...newImages]);
+      onImagesChange?.([...images, ...newImages]);
     }
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = images.filter((_, i) => i !== index);
+    setImages(newImages);
+    onImagesChange?.(newImages);
   };
 
   return (
     <View style={styles.container}>
-      {image ? (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: image }} style={styles.image} />
-          <Button onPress={() => setImage(null)}>Remove</Button>
-        </View>
-      ) : (
-        <Button mode="outlined" onPress={pickImage} icon="image-plus">
-          Add Media
-        </Button>
-      )}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.imageScroll}>
+        {images.map((uri, index) => (
+          <View key={index} style={styles.imageContainer}>
+            <Image source={{ uri }} style={styles.image} />
+            <IconButton
+              icon="close-circle"
+              size={20}
+              style={styles.removeButton}
+              onPress={() => removeImage(index)}
+            />
+          </View>
+        ))}
+      </ScrollView>
+      <Button
+        mode="outlined"
+        onPress={pickImages}
+        icon="image-plus"
+        style={styles.addButton}>
+        Add Media
+      </Button>
     </View>
   );
 };
@@ -39,13 +64,27 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 8,
   },
+  imageScroll: {
+    flexGrow: 0,
+    marginBottom: 8,
+  },
   imageContainer: {
-    alignItems: "center",
+    marginRight: 8,
+    position: "relative",
   },
   image: {
-    width: "100%",
-    height: 200,
+    width: 100,
+    height: 100,
     borderRadius: 8,
-    marginBottom: 8,
+  },
+  removeButton: {
+    position: "absolute",
+    top: -8,
+    right: -8,
+    margin: 0,
+    backgroundColor: "white",
+  },
+  addButton: {
+    marginTop: 8,
   },
 });

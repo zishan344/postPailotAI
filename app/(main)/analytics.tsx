@@ -1,83 +1,108 @@
-import { ScrollView, View, StyleSheet } from "react-native";
-import { Card, Text, SegmentedButtons, useTheme } from "react-native-paper";
-import { useState } from "react";
-import { AnalyticsChart } from "../../src/components/AnalyticsChart";
-import { PlatformSelector } from "../../src/components/PlatformSelector";
+import { useState, useCallback } from "react";
+import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
+import { Text, SegmentedButtons, Card, useTheme } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useQuery } from "@tanstack/react-query";
+import { analyticsService } from "../../src/services/analyticsService";
+import { EngagementChart } from "../../src/components/analytics/EngagementChart";
+import { EngagementByHourChart } from "../../src/components/analytics/EngagementByHourChart";
+import { TopPosts } from "../../src/components/analytics/TopPosts";
+import { PlatformStats } from "../../src/components/analytics/PlatformStats";
+import { AnalyticsSummary } from "../../src/components/analytics/AnalyticsSummary";
 
-type Platform = "instagram" | "facebook" | "twitter" | "linkedin";
+type TimeRange = "week" | "month" | "year";
 
 export default function AnalyticsScreen() {
-  const [timeRange, setTimeRange] = useState("week");
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+
+  const {
+    data: dailyStats,
+    isLoading: isLoadingStats,
+    refetch: refetchStats,
+  } = useQuery({
+    queryKey: ["analytics", "daily", timeRange],
+    queryFn: () => analyticsService.fetchDailyStats(timeRange),
+  });
+
+  const {
+    data: platformStats,
+    isLoading: isLoadingPlatforms,
+    refetch: refetchPlatforms,
+  } = useQuery({
+    queryKey: ["analytics", "platforms"],
+    queryFn: analyticsService.fetchPlatformStats,
+  });
+
+  const {
+    data: topPosts,
+    isLoading: isLoadingPosts,
+    refetch: refetchPosts,
+  } = useQuery({
+    queryKey: ["analytics", "top-posts"],
+    queryFn: analyticsService.fetchTopPosts,
+  });
+
+  const {
+    data: hourlyEngagement,
+    isLoading: isLoadingHourly,
+    refetch: refetchHourly,
+  } = useQuery({
+    queryKey: ["analytics", "hourly"],
+    queryFn: analyticsService.fetchEngagementByHour,
+  });
+
+  const isLoading =
+    isLoadingStats || isLoadingPlatforms || isLoadingPosts || isLoadingHourly;
+
+  const onRefresh = useCallback(() => {
+    refetchStats();
+    refetchPlatforms();
+    refetchPosts();
+    refetchHourly();
+  }, [refetchStats, refetchPlatforms, refetchPosts, refetchHourly]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Card style={styles.filterCard}>
-        <Card.Content>
-          <PlatformSelector
-            selected={selectedPlatforms}
-            onSelect={setSelectedPlatforms}
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
+        <Text variant="headlineSmall">Analytics</Text>
+        <SegmentedButtons
+          value={timeRange}
+          onValueChange={(value) => setTimeRange(value as TimeRange)}
+          buttons={[
+            { value: "week", label: "Week" },
+            { value: "month", label: "Month" },
+            { value: "year", label: "Year" },
+          ]}
+          style={styles.timeRangeSelector}
+        />
+      </View>
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
           />
+        }
+        style={styles.content}>
+        {dailyStats && (
+          <>
+            <AnalyticsSummary data={dailyStats} timeRange={timeRange} />
+            <EngagementChart data={dailyStats} />
+          </>
+        )}
 
-          <SegmentedButtons
-            value={timeRange}
-            onValueChange={setTimeRange}
-            buttons={[
-              { value: "week", label: "Week" },
-              { value: "month", label: "Month" },
-              { value: "year", label: "Year" },
-            ]}
-            style={styles.segmentedButtons}
-          />
-        </Card.Content>
-      </Card>
+        {hourlyEngagement && <EngagementByHourChart data={hourlyEngagement} />}
 
-      <Card style={styles.statsCard}>
-        <Card.Content>
-          <Text variant="titleMedium">Overview</Text>
-          <View style={styles.statsGrid}>
-            <StatItem title="Engagement" value="2.5K" change="+15%" />
-            <StatItem title="Impressions" value="10.2K" change="+8%" />
-            <StatItem title="Followers" value="5.6K" change="+12%" />
-            <StatItem title="Posts" value="48" change="+5%" />
-          </View>
-        </Card.Content>
-      </Card>
+        {platformStats && <PlatformStats data={platformStats} />}
 
-      <Card style={styles.chartCard}>
-        <Card.Content>
-          <Text variant="titleMedium">Engagement Over Time</Text>
-          <AnalyticsChart />
-        </Card.Content>
-      </Card>
-    </ScrollView>
-  );
-}
+        {topPosts && <TopPosts posts={topPosts} />}
 
-function StatItem({
-  title,
-  value,
-  change,
-}: {
-  title: string;
-  value: string;
-  change: string;
-}) {
-  const theme = useTheme();
-  const isPositive = change.startsWith("+");
-
-  return (
-    <View style={styles.statItem}>
-      <Text variant="bodyMedium">{title}</Text>
-      <Text variant="headlineSmall">{value}</Text>
-      <Text
-        variant="bodySmall"
-        style={{
-          color: isPositive ? theme.colors.primary : theme.colors.error,
-        }}>
-        {change}
-      </Text>
+        <View style={{ height: insets.bottom + 16 }} />
+      </ScrollView>
     </View>
   );
 }
@@ -85,31 +110,18 @@ function StatItem({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  header: {
     padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
-  filterCard: {
-    marginBottom: 16,
-  },
-  segmentedButtons: {
+  timeRangeSelector: {
     marginTop: 16,
   },
-  statsCard: {
-    marginBottom: 16,
-  },
-  chartCard: {
-    marginBottom: 16,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 16,
-    gap: 16,
-  },
-  statItem: {
+  content: {
     flex: 1,
-    minWidth: "45%",
     padding: 16,
-    borderRadius: 8,
-    backgroundColor: "#f5f5f5",
   },
 });

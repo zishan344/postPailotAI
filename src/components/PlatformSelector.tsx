@@ -14,7 +14,13 @@ export const PlatformSelector = ({
   onSelect,
 }: PlatformSelectorProps) => {
   const handleSelect = (platform: Platform) => {
-    onSelect([platform]); // Single selection mode
+    if (selected.includes(platform)) {
+      // Remove platform if already selected
+      onSelect(selected.filter((p) => p !== platform));
+    } else {
+      // Add platform to selection
+      onSelect([...selected, platform]);
+    }
   };
 
   return (

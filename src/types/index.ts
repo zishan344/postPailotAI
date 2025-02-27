@@ -82,3 +82,13 @@ export interface AuthState {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  type: "comment" | "mention" | "analytics" | "schedule" | "system";
+  read: boolean;
+  created_at: string;
+}

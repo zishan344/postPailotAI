@@ -1,25 +1,19 @@
 import { View, Dimensions, StyleSheet } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { LineChart } from "react-native-chart-kit";
+import { BarChart } from "react-native-chart-kit";
 
-interface EngagementChartProps {
-  data: any[];
+interface EngagementByHourProps {
+  data: { hour: number; avg: number }[];
 }
 
-export function EngagementChart({ data }: EngagementChartProps) {
+export function EngagementByHourChart({ data }: EngagementByHourProps) {
   const theme = useTheme();
 
   const chartData = {
-    labels: data.map((stat) =>
-      new Date(stat.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
-    ),
+    labels: data.map((d) => `${d.hour}:00`),
     datasets: [
       {
-        data: data.map((stat) => stat.engagement_rate),
-        color: () => theme.colors.primary,
+        data: data.map((d) => d.avg),
       },
     ],
   };
@@ -27,12 +21,14 @@ export function EngagementChart({ data }: EngagementChartProps) {
   return (
     <View style={styles.container}>
       <Text variant="titleMedium" style={styles.title}>
-        Engagement Rate Over Time
+        Best Time to Post
       </Text>
-      <LineChart
+      <BarChart
         data={chartData}
-        width={Dimensions.get("window").width - 48}
+        width={Dimensions.get("window").width - 32}
         height={220}
+        yAxisLabel="%"
+        yAxisSuffix=""
         chartConfig={{
           backgroundColor: theme.colors.surface,
           backgroundGradientFrom: theme.colors.surface,
@@ -43,15 +39,13 @@ export function EngagementChart({ data }: EngagementChartProps) {
           style: {
             borderRadius: 16,
           },
-          propsForDots: {
-            r: "6",
-            strokeWidth: "2",
-            stroke: theme.colors.primary,
-          },
+          barPercentage: 0.7,
         }}
-        bezier
         style={styles.chart}
       />
+      <Text variant="bodySmall" style={styles.subtitle}>
+        Average engagement rate by hour of day
+      </Text>
     </View>
   );
 }
@@ -66,5 +60,9 @@ const styles = StyleSheet.create({
   chart: {
     marginVertical: 8,
     borderRadius: 16,
+  },
+  subtitle: {
+    textAlign: "center",
+    opacity: 0.7,
   },
 });
