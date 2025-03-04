@@ -1,13 +1,23 @@
-import { View, Dimensions, StyleSheet } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
+import { styled } from "nativewind";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+
+interface EngagementData {
+  date: string;
+  engagement_rate: number;
+}
 
 interface EngagementChartProps {
-  data: any[];
+  data: EngagementData[];
 }
 
 export function EngagementChart({ data }: EngagementChartProps) {
   const theme = useTheme();
+  const screenWidth = Dimensions.get("window").width;
 
   const chartData = {
     labels: data.map((stat) =>
@@ -25,13 +35,14 @@ export function EngagementChart({ data }: EngagementChartProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="titleMedium" style={styles.title}>
+    <StyledView className="mb-6">
+      <StyledText className="text-lg font-medium mb-4 px-4">
         Engagement Rate Over Time
-      </Text>
+      </StyledText>
+
       <LineChart
         data={chartData}
-        width={Dimensions.get("window").width - 48}
+        width={screenWidth - 32}
         height={220}
         chartConfig={{
           backgroundColor: theme.colors.surface,
@@ -50,21 +61,11 @@ export function EngagementChart({ data }: EngagementChartProps) {
           },
         }}
         bezier
-        style={styles.chart}
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
       />
-    </View>
+    </StyledView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 16,
-  },
-  title: {
-    marginBottom: 16,
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 16,
-  },
-});

@@ -1,98 +1,87 @@
-import { View, StyleSheet } from "react-native";
-import { List, IconButton, Text, useTheme } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { formatTimeAgo } from "../utils";
-import type { Notification } from "../types";
+import { View } from 'react-native';
+import { Text, IconButton, useTheme } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { formatTimeAgo } from '../utils';
+import { styled } from 'nativewind';
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
 
 interface NotificationItemProps {
-  notification: Notification;
+  notification: {
+    id: string;
+    title: string;
+    body: string;
+    type: 'comment' | 'mention' | 'analytics' | 'schedule' | 'system';
+    read: boolean;
+    created_at: string;
+  };
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function NotificationItem({
-  notification,
-  onMarkAsRead,
-  onDelete,
+export function NotificationItem({ 
+  notification, 
+  onMarkAsRead, 
+  onDelete 
 }: NotificationItemProps) {
   const theme = useTheme();
 
   const getIcon = (type: string) => {
     switch (type) {
-      case "comment":
-        return "comment-text";
-      case "mention":
-        return "at";
-      case "analytics":
-        return "chart-line";
-      case "schedule":
-        return "calendar-clock";
-      default:
-        return "bell";
+      case 'comment': return 'comment-text';
+      case 'mention': return 'at';
+      case 'analytics': return 'chart-line';
+      case 'schedule': return 'calendar-clock';
+      default: return 'bell';
     }
   };
 
   return (
-    <List.Item
-      title={notification.title}
-      description={notification.body}
-      left={(props) => (
-        <View style={styles.iconContainer}>
-          <MaterialCommunityIcons
-            name={getIcon(notification.type)}
-            size={24}
-            color={
-              notification.read
-                ? theme.colors.onSurfaceDisabled
-                : theme.colors.primary
-            }
-          />
-        </View>
-      )}
-      right={(props) => (
-        <View style={styles.actions}>
-          <Text variant="bodySmall" style={styles.timestamp}>
-            {formatTimeAgo(notification.created_at)}
-          </Text>
-          {!notification.read && (
-            <IconButton
-              icon="check-circle"
-              size={20}
-              onPress={() => onMarkAsRead(notification.id)}
-            />
-          )}
+    <StyledView 
+      className={`flex-row items-center p-4 border-b border-gray-200 
+        ${!notification.read ? 'bg-primary-50' : 'bg-white'}`}
+    >
+      <StyledView className="p-2 rounded-full bg-primary-100">
+        <MaterialCommunityIcons
+          name={getIcon(notification.type)}
+          size={24}
+          color={theme.colors.primary}
+        />
+      </StyledView>
+
+      <StyledView className="flex-1 ml-3">
+        <StyledText className="font-medium text-gray-900">
+          {notification.title}
+        </StyledText>
+        <StyledText className="text-sm text-gray-600 mt-1">
+          {notification.body}
+        </StyledText>
+        <StyledText className="text-xs text-gray-500 mt-1">
+          {formatTimeAgo(notification.created_at)}
+        </StyledText>
+      </StyledView>
+
+      <StyledView className="flex-row items-center">
+        {!notification.read && (
           <IconButton
-            icon="delete"
+            icon="check-circle"
             size={20}
-            onPress={() => onDelete(notification.id)}
+            className="mr-1"
+            onPress={() => onMarkAsRead(notification.id)}
           />
-        </View>
-      )}
-      style={[
-        styles.item,
-        !notification.read && {
-          backgroundColor: theme.colors.primaryContainer,
-          opacity: 0.9,
-        },
-      ]}
-    />
+        )}
+        <IconButton
+          icon="delete"
+          size={20}
+          iconColor={theme.colors.error}
+          onPress={() => onDelete(notification.id)}
+        />
+      </StyledView>
+    </StyledView>
   );
 }
 
-const styles = StyleSheet.create({
-  item: {
-    marginVertical: 1,
-  },
-  iconContainer: {
-    justifyContent: "center",
-    marginLeft: 8,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  timestamp: {
-    marginRight: 8,
-    opacity: 0.7,
-  },
-});
+    </StyledView>
+  );
+}

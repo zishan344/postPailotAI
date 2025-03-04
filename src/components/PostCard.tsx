@@ -1,28 +1,45 @@
+import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Text, Button, Avatar } from "react-native-paper";
+import { Card, Text, Chip, IconButton } from "react-native-paper";
 
-export function PostCard() {
+interface PostCardProps {
+  content: string;
+  platforms: string[];
+  scheduledTime?: string;
+  status?: string;
+}
+
+export function PostCard({
+  content,
+  platforms,
+  scheduledTime,
+  status,
+}: PostCardProps) {
   return (
     <Card style={styles.card}>
       <Card.Content>
-        <View style={styles.header}>
-          <Avatar.Image
-            size={40}
-            source={{ uri: "https://placeholder.com/40" }}
-          />
-          <View style={styles.headerText}>
-            <Text variant="titleMedium">Post Title</Text>
-            <Text variant="bodySmall">2 hours ago • Twitter</Text>
-          </View>
-        </View>
-        <Text variant="bodyMedium" style={styles.content}>
-          Post content goes here...
+        <Text numberOfLines={3} style={styles.content}>
+          {content}
         </Text>
+
+        <View style={styles.footer}>
+          <View style={styles.platforms}>
+            {platforms.map((platform) => (
+              <Chip key={platform} style={styles.platform}>
+                {platform}
+              </Chip>
+            ))}
+          </View>
+
+          {scheduledTime && (
+            <View style={styles.scheduleInfo}>
+              <IconButton icon="clock-outline" size={20} />
+              <Text>{scheduledTime}</Text>
+              {status && <Chip compact>{status}</Chip>}
+            </View>
+          )}
+        </View>
       </Card.Content>
-      <Card.Actions>
-        <Button>Edit</Button>
-        <Button>Delete</Button>
-      </Card.Actions>
     </Card>
   );
 }
@@ -31,15 +48,24 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
   },
-  header: {
-    flexDirection: "row",
+  content: {
     marginBottom: 16,
   },
-  headerText: {
-    marginLeft: 12,
-    justifyContent: "center",
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  content: {
-    marginBottom: 8,
+  platforms: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  platform: {
+    marginRight: 8,
+  },
+  scheduleInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
 });

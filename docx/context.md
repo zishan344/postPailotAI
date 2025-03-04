@@ -17,8 +17,8 @@
   - Real-time subscriptions
   - Storage for media files
   - Edge Functions for serverless computing
+  - push notifications
 - DeepSeek API for AI content generation
-- Firebase for push notifications
 - Redis for caching
 
 ### Authentication & Payments

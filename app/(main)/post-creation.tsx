@@ -6,11 +6,16 @@ import {
   Card,
   Chip,
   Text,
+  Portal,
+  Modal,
   useTheme,
 } from "react-native-paper";
+import { useRouter } from "expo-router";
 import { MediaPicker } from "../../src/components/MediaPicker";
 import { PlatformSelector } from "../../src/components/PlatformSelector";
 import { useAIContentStore } from "../../src/stores/aiContentStore";
+import { ScheduleCalendar } from "../../src/components/ScheduleCalendar";
+import { schedulingService } from "../../src/services/schedulingService";
 
 type Platform = "twitter" | "linkedin" | "facebook" | "instagram";
 
@@ -18,8 +23,13 @@ export default function PostCreationScreen() {
   const [content, setContent] = useState("");
   const [prompt, setPrompt] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState(new Date());
+  const [isScheduling, setIsScheduling] = useState(false);
   const { generatePost, getSuggestions, suggestions, isLoading } =
     useAIContentStore();
+  const router = useRouter();
   const theme = useTheme();
 
   const handleGenerate = async () => {
@@ -37,88 +47,157 @@ export default function PostCreationScreen() {
   };
 
   const handleGetSuggestions = async () => {
-    if (!content || !selectedPlatforms[0]) return;
-    await getSuggestions(content, selectedPlatforms[0]);
+    if (!content || selectedPlatforms.length === 0) {
+      return;
+    }
+    try {
+      await getSuggestions(content, selectedPlatforms[0]);
+    } catch (error) {
+      console.error("Error getting suggestions:", error);
+    }
+  };
+
+  const handleSchedule = async () => {
+    if (!content || selectedPlatforms.length === 0) {
+      return;
+    }
+
+    try {
+      setIsScheduling(true);
+      await schedulingService.schedulePost({
+        content,
+        platforms: selectedPlatforms,
+        scheduledDate,
+        mediaUrls,
+      });
+      setShowScheduleModal(false);
+      router.push("/schedule");
+    } catch (error) {
+      console.error("Error scheduling post:", error);
+    } finally {
+      setIsScheduling(false);
+    }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <PlatformSelector
-            selected={selectedPlatforms}
-            onSelect={setSelectedPlatforms}
-          />
+    <>
+      <ScrollView style={styles.container}>
+        <Card style={styles.card}>
+          <Card.Content>
+            <PlatformSelector
+              selected={selectedPlatforms}
+              onSelect={setSelectedPlatforms}
+            />
 
-          {/* AI Generation Section */}
-          <Card style={styles.aiCard}>
-            <Card.Content>
-              <Text variant="titleMedium">AI Content Generation</Text>
-              <TextInput
-                mode="outlined"
-                placeholder="What would you like to post about?"
-                value={prompt}
-                onChangeText={setPrompt}
-                style={styles.input}
-              />
+            {/* AI Generation Section */}
+            <Card style={styles.aiCard}>
+              <Card.Content>
+                <Text variant="titleMedium">AI Content Generation</Text>
+                <TextInput
+                  mode="outlined"
+                  placeholder="What would you like to post about?"
+                  value={prompt}
+                  onChangeText={setPrompt}
+                  style={styles.input}
+                />
+                <Button
+                  mode="contained"
+                  onPress={handleGenerate}
+                  loading={isLoading}
+                  style={styles.generateButton}>
+                  Generate Content
+                </Button>
+              </Card.Content>
+            </Card>
+
+            <TextInput
+              mode="outlined"
+              multiline
+              numberOfLines={4}
+              placeholder="What's on your mind?"
+              value={content}
+              onChangeText={setContent}
+              style={styles.input}
+            />
+
+            <MediaPicker />
+
+            <View style={styles.aiSuggestions}>
+              <View style={styles.suggestionHeader}>
+                <Text variant="titleMedium">AI Suggestions</Text>
+                <Button
+                  mode="text"
+                  onPress={handleGetSuggestions}
+                  loading={isLoading}
+                  disabled={!content || selectedPlatforms.length === 0}>
+                  Get Suggestions
+                </Button>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {suggestions.map((suggestion, index) => (
+                  <Chip
+                    key={index}
+                    onPress={() => setContent(suggestion)}
+                    style={styles.chip}>
+                    Version {index + 1}
+                  </Chip>
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={styles.buttonContainer}>
               <Button
                 mode="contained"
-                onPress={handleGenerate}
-                loading={isLoading}
-                style={styles.generateButton}>
-                Generate Content
+                onPress={() => setShowScheduleModal(true)}
+                disabled={!content || selectedPlatforms.length === 0}
+                style={styles.button}>
+                Schedule Post
               </Button>
-            </Card.Content>
-          </Card>
-
-          <TextInput
-            mode="outlined"
-            multiline
-            numberOfLines={4}
-            placeholder="What's on your mind?"
-            value={content}
-            onChangeText={setContent}
-            style={styles.input}
-          />
-
-          <MediaPicker />
-
-          <View style={styles.aiSuggestions}>
-            <View style={styles.suggestionHeader}>
-              <Text variant="titleMedium">AI Suggestions</Text>
               <Button
-                mode="text"
-                onPress={handleGetSuggestions}
-                loading={isLoading}>
-                Get Suggestions
+                mode="contained-tonal"
+                onPress={() => {}}
+                style={styles.button}>
+                Post Now
               </Button>
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {suggestions.map((suggestion, index) => (
-                <Chip
-                  key={index}
-                  onPress={() => setContent(suggestion)}
-                  style={styles.chip}>
-                  Version {index + 1}
-                </Chip>
-              ))}
-            </ScrollView>
-          </View>
+          </Card.Content>
+        </Card>
+      </ScrollView>
 
-          <View style={styles.buttonContainer}>
-            <Button mode="contained" onPress={() => {}} style={styles.button}>
-              Schedule Post
-            </Button>
-            <Button
-              mode="contained-tonal"
-              onPress={() => {}}
-              style={styles.button}>
-              Post Now
-            </Button>
-          </View>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+      <Portal>
+        <Modal
+          visible={showScheduleModal}
+          onDismiss={() => setShowScheduleModal(false)}
+          contentContainerStyle={styles.modalContainer}>
+          <Card>
+            <Card.Content>
+              <Text variant="titleLarge" style={styles.modalTitle}>
+                Schedule Post
+              </Text>
+              <ScheduleCalendar
+                selectedDate={scheduledDate}
+                onSelectDate={setScheduledDate}
+              />
+              <View style={styles.modalActions}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setShowScheduleModal(false)}
+                  style={styles.modalButton}>
+                  Cancel
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={handleSchedule}
+                  loading={isScheduling}
+                  style={styles.modalButton}>
+                  Confirm
+                </Button>
+              </View>
+            </Card.Content>
+          </Card>
+        </Modal>
+      </Portal>
+    </>
   );
 }
 
@@ -158,5 +237,22 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
+  },
+  modalContainer: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 8,
+  },
+  modalTitle: {
+    marginBottom: 16,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 16,
+    gap: 8,
+  },
+  modalButton: {
+    minWidth: 100,
   },
 });

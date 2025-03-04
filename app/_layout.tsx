@@ -45,12 +45,15 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <PaperProvider theme={theme}>
-          <Stack>
-            {session ? (
-              <Stack.Screen name="(main)" options={{ headerShown: false }} />
-            ) : (
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            )}
+          <Stack
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: theme.colors.primary,
+              },
+              headerTintColor: "#fff",
+            }}>
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(main)" options={{ headerShown: false }} />
             <Stack.Screen name="index" options={{ headerShown: false }} />
           </Stack>
         </PaperProvider>

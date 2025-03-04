@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import * as Notifications from "expo-notifications";
 
 export type NotificationType =
   | "comment"
@@ -113,5 +114,26 @@ export const notificationService = {
       body,
       type: "system",
     });
+  },
+
+  async scheduleNotification(postId: string, scheduledFor: Date) {
+    const trigger = new Date(scheduledFor);
+    trigger.setMinutes(trigger.getMinutes() - 10); // Notify 10 minutes before
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Upcoming Post Reminder",
+        body: `Your post is scheduled for ${trigger.toLocaleString()}.`,
+        data: { postId },
+      },
+      trigger: {
+        seconds: Math.floor((trigger.getTime() - Date.now()) / 1000),
+        repeats: false,
+      },
+    });
+  },
+
+  async cancelNotification(notificationId: string) {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
   },
 };

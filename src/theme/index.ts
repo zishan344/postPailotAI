@@ -1,49 +1,38 @@
-import { MD3LightTheme, MD3DarkTheme } from "react-native-paper";
+import { MD3LightTheme, configureFonts } from "react-native-paper";
 import type { MD3Theme } from "react-native-paper";
 
-interface CustomColors {
-  success: string;
-  warning: string;
-  info: string;
-}
+const fontConfig = {
+  displayLarge: {
+    fontFamily: "sans-serif",
+    fontSize: 57,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 64,
+  },
+  displayMedium: {
+    fontFamily: "sans-serif",
+    fontSize: 45,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 52,
+  },
+  // ... other font configurations
+};
 
-interface CustomTheme extends MD3Theme {
-  colors: MD3Theme["colors"] & CustomColors;
-}
-
-const lightTheme: CustomTheme = {
+export const theme: MD3Theme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: "#2196F3",
-    secondary: "#03DAC6",
-    error: "#B00020",
-    background: "#F6F6F6",
-    surface: "#FFFFFF",
-    // Add custom colors here
-    success: "#4CAF50",
-    warning: "#FB8C00",
-    info: "#2196F3",
+    primary: "#6366F1",
+    primaryContainer: "#EEEEFF",
+    secondary: "#4F51C2",
+    secondaryContainer: "#E0E0FF",
+    error: "#DC2626",
+    errorContainer: "#FEE2E2",
+    success: "#10B981",
+    successContainer: "#D1FAE5",
+    warning: "#F59E0B",
+    warningContainer: "#FEF3C7",
   },
-  roundness: 8,
+  fonts: configureFonts({ config: fontConfig }),
 };
-
-const darkTheme: CustomTheme = {
-  ...MD3DarkTheme,
-  colors: {
-    ...MD3DarkTheme.colors,
-    primary: "#90CAF9",
-    secondary: "#03DAC6",
-    error: "#CF6679",
-    background: "#121212",
-    surface: "#1E1E1E",
-    // Add custom colors here
-    success: "#81C784",
-    warning: "#FFB74D",
-    info: "#64B5F6",
-  },
-  roundness: 8,
-};
-
-export { lightTheme, darkTheme };
-export type { CustomTheme };

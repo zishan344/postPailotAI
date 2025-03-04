@@ -1,14 +1,17 @@
-import { useState, useCallback } from "react";
-import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
-import { Text, SegmentedButtons, Card, useTheme } from "react-native-paper";
+import { useState } from "react";
+import { View, ScrollView, RefreshControl } from "react-native";
+import { Text, SegmentedButtons, useTheme } from "react-native-paper";
+import { styled } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { analyticsService } from "../../src/services/analyticsService";
 import { EngagementChart } from "../../src/components/analytics/EngagementChart";
-import { EngagementByHourChart } from "../../src/components/analytics/EngagementByHourChart";
 import { TopPosts } from "../../src/components/analytics/TopPosts";
-import { PlatformStats } from "../../src/components/analytics/PlatformStats";
 import { AnalyticsSummary } from "../../src/components/analytics/AnalyticsSummary";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledScrollView = styled(ScrollView);
 
 type TimeRange = "week" | "month" | "year";
 
@@ -18,55 +21,20 @@ export default function AnalyticsScreen() {
   const insets = useSafeAreaInsets();
 
   const {
-    data: dailyStats,
-    isLoading: isLoadingStats,
-    refetch: refetchStats,
+    data: stats,
+    isLoading,
+    refetch,
   } = useQuery({
-    queryKey: ["analytics", "daily", timeRange],
+    queryKey: ["analytics", timeRange],
     queryFn: () => analyticsService.fetchDailyStats(timeRange),
   });
 
-  const {
-    data: platformStats,
-    isLoading: isLoadingPlatforms,
-    refetch: refetchPlatforms,
-  } = useQuery({
-    queryKey: ["analytics", "platforms"],
-    queryFn: analyticsService.fetchPlatformStats,
-  });
-
-  const {
-    data: topPosts,
-    isLoading: isLoadingPosts,
-    refetch: refetchPosts,
-  } = useQuery({
-    queryKey: ["analytics", "top-posts"],
-    queryFn: analyticsService.fetchTopPosts,
-  });
-
-  const {
-    data: hourlyEngagement,
-    isLoading: isLoadingHourly,
-    refetch: refetchHourly,
-  } = useQuery({
-    queryKey: ["analytics", "hourly"],
-    queryFn: analyticsService.fetchEngagementByHour,
-  });
-
-  const isLoading =
-    isLoadingStats || isLoadingPlatforms || isLoadingPosts || isLoadingHourly;
-
-  const onRefresh = useCallback(() => {
-    refetchStats();
-    refetchPlatforms();
-    refetchPosts();
-    refetchHourly();
-  }, [refetchStats, refetchPlatforms, refetchPosts, refetchHourly]);
-
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text variant="headlineSmall">Analytics</Text>
+    <StyledView className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+      <StyledView className="px-4 py-3 border-b border-gray-200">
+        <StyledText className="text-2xl font-semibold mb-3">
+          Analytics
+        </StyledText>
         <SegmentedButtons
           value={timeRange}
           onValueChange={(value) => setTimeRange(value as TimeRange)}
@@ -75,53 +43,28 @@ export default function AnalyticsScreen() {
             { value: "month", label: "Month" },
             { value: "year", label: "Year" },
           ]}
-          style={styles.timeRangeSelector}
         />
-      </View>
+      </StyledView>
 
-      <ScrollView
+      <StyledScrollView
+        className="flex-1"
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
-            onRefresh={onRefresh}
+            onRefresh={refetch}
             colors={[theme.colors.primary]}
           />
-        }
-        style={styles.content}>
-        {dailyStats && (
-          <>
-            <AnalyticsSummary data={dailyStats} timeRange={timeRange} />
-            <EngagementChart data={dailyStats} />
-          </>
-        )}
-
-        {hourlyEngagement && <EngagementByHourChart data={hourlyEngagement} />}
-
-        {platformStats && <PlatformStats data={platformStats} />}
-
-        {topPosts && <TopPosts posts={topPosts} />}
-
-        <View style={{ height: insets.bottom + 16 }} />
-      </ScrollView>
-    </View>
+        }>
+        <StyledView className="p-4">
+          {stats && (
+            <>
+              <AnalyticsSummary data={stats} timeRange={timeRange} />
+              <EngagementChart data={stats} />
+              <TopPosts posts={stats.topPosts} />
+            </>
+          )}
+        </StyledView>
+      </StyledScrollView>
+    </StyledView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  timeRangeSelector: {
-    marginTop: 16,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-});

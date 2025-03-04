@@ -1,92 +1,67 @@
-import { View, StyleSheet } from "react-native";
-import { List, IconButton, Text, useTheme } from "react-native-paper";
+import { View, ScrollView, RefreshControl } from "react-native";
+import { Text, Button, useTheme } from "react-native-paper";
+import { NotificationItem } from "./NotificationItem";
 import { useNotificationStore } from "../stores/notificationStore";
-import { formatDate } from "../utils";
+import { styled } from "nativewind";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledScrollView = styled(ScrollView);
 
 export function NotificationList() {
-  const { notifications, markAsRead, deleteNotification } =
-    useNotificationStore();
   const theme = useTheme();
-
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "comment":
-        return "comment";
-      case "mention":
-        return "at";
-      case "analytics":
-        return "chart-line";
-      case "schedule":
-        return "calendar";
-      default:
-        return "bell";
-    }
-  };
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    fetchNotifications,
+  } = useNotificationStore();
 
   return (
-    <View style={styles.container}>
-      {notifications.length === 0 ? (
-        <Text style={styles.emptyText}>No notifications</Text>
-      ) : (
-        notifications.map((notification) => (
-          <List.Item
-            key={notification.id}
-            title={notification.title}
-            description={notification.body}
-            left={(props) => (
-              <List.Icon
-                {...props}
-                icon={getIcon(notification.type)}
-                color={
-                  notification.read
-                    ? theme.colors.onSurfaceDisabled
-                    : theme.colors.primary
-                }
-              />
-            )}
-            right={(props) => (
-              <View style={styles.actions}>
-                {!notification.read && (
-                  <IconButton
-                    icon="check"
-                    size={20}
-                    onPress={() => markAsRead(notification.id)}
-                  />
-                )}
-                <IconButton
-                  icon="delete"
-                  size={20}
-                  onPress={() => deleteNotification(notification.id)}
-                />
-              </View>
-            )}
-            style={[
-              styles.item,
-              !notification.read && {
-                backgroundColor: theme.colors.primaryContainer,
-              },
-            ]}
-          />
-        ))
+    <StyledView className="flex-1 bg-white">
+      {unreadCount > 0 && (
+        <StyledView className="flex-row justify-between items-center px-4 py-2 bg-primary-50">
+          <StyledText className="text-primary-700">
+            {unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}
+          </StyledText>
+          <Button
+            mode="text"
+            onPress={markAllAsRead}
+            textColor={theme.colors.primary}>
+            Mark all as read
+          </Button>
+        </StyledView>
       )}
-    </View>
+
+      <StyledScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={fetchNotifications}
+            colors={[theme.colors.primary]}
+          />
+        }>
+        {notifications.length === 0 ? (
+          <StyledView className="flex-1 justify-center items-center p-8">
+            <StyledText className="text-gray-500 text-center">
+              No notifications yet
+            </StyledText>
+          </StyledView>
+        ) : (
+          notifications.map((notification) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkAsRead={markAsRead}
+              onDelete={deleteNotification}
+            />
+          ))
+        )}
+      </StyledScrollView>
+    </StyledView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    marginVertical: 1,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 24,
-    opacity: 0.6,
-  },
-});

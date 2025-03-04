@@ -2,6 +2,8 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, Button, useTheme } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { format } from "date-fns";
 
 interface ScheduleCalendarProps {
   selectedDate: Date;
@@ -21,7 +23,11 @@ export function ScheduleCalendar({
       <View style={styles.calendarContainer}>
         <Calendar
           current={formattedDate}
-          onDayPress={(day) => onSelectDate(new Date(day.timestamp))}
+          onDayPress={(day) => {
+            const newDate = new Date(selectedDate);
+            newDate.setFullYear(day.year, day.month - 1, day.day);
+            onSelectDate(newDate);
+          }}
           markedDates={{
             [formattedDate]: {
               selected: true,
@@ -35,6 +41,20 @@ export function ScheduleCalendar({
           }}
         />
       </View>
+      <View style={styles.timeContainer}>
+        <Text variant="titleMedium">Time</Text>
+        <DateTimePicker
+          value={selectedDate}
+          mode="time"
+          is24Hour={false}
+          onChange={(event, date) => {
+            if (date) onSelectDate(date);
+          }}
+        />
+      </View>
+      <Text style={styles.selectedDateTime}>
+        Selected: {format(selectedDate, "PPpp")}
+      </Text>
       <Button mode="contained" onPress={() => onSelectDate(new Date())}>
         Select Date
       </Button>
@@ -52,5 +72,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     alignItems: "center",
+  },
+  timeContainer: {
+    marginTop: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  selectedDateTime: {
+    marginTop: 16,
+    textAlign: "center",
+    opacity: 0.7,
   },
 });

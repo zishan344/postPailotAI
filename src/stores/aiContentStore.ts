@@ -1,49 +1,52 @@
 import { create } from "zustand";
-import {
-  generateContent,
-  generateSuggestions,
-  GenerationParams,
-} from "../lib/deepseek";
+import { deepseek } from "../lib/deepseek";
 
 interface AIContentState {
-  suggestions: string[];
   isLoading: boolean;
   error: string | null;
-
-  generatePost: (params: GenerationParams) => Promise<string>;
+  suggestions: string[];
+  generatePost: (options: {
+    prompt: string;
+    platform: string;
+    tone?: string;
+  }) => Promise<string>;
   getSuggestions: (content: string, platform: string) => Promise<void>;
-  clearSuggestions: () => void;
 }
 
-export const useAIContentStore = create<AIContentState>((set) => ({
-  suggestions: [],
+export const useAIContentStore = create<AIContentState>((set, get) => ({
   isLoading: false,
   error: null,
+  suggestions: [],
 
-  generatePost: async (params: GenerationParams) => {
-    set({ isLoading: true, error: null });
+  generatePost: async ({ prompt, platform, tone }) => {
     try {
-      const content = await generateContent(params);
+      set({ isLoading: true, error: null });
+      const content = await deepseek.generate({ prompt, platform, tone });
       set({ isLoading: false });
       return content;
     } catch (error) {
-      set({ error: "Failed to generate content", isLoading: false });
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : "Failed to generate content",
+      });
       throw error;
     }
   },
 
   getSuggestions: async (content: string, platform: string) => {
-    set({ isLoading: true, error: null });
     try {
-      const suggestions = await generateSuggestions(content, platform);
+      set({ isLoading: true, error: null });
+      const suggestions = await deepseek.generateSuggestions(content, platform);
       set({ suggestions, isLoading: false });
     } catch (error) {
-      set({ error: "Failed to generate suggestions", isLoading: false });
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : "Failed to get suggestions",
+        suggestions: [],
+      });
       throw error;
     }
-  },
-
-  clearSuggestions: () => {
-    set({ suggestions: [] });
   },
 }));

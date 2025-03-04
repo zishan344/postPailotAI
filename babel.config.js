@@ -15,6 +15,7 @@ module.exports = function (api) {
           allowUndefined: true,
         },
       ],
+      "nativewind/babel",
     ],
   };
 };

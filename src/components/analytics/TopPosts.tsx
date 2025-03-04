@@ -1,7 +1,11 @@
-import { View, StyleSheet } from "react-native";
-import { Card, Text, List, useTheme } from "react-native-paper";
+import { View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { styled } from "nativewind";
 import { formatNumber } from "../../utils";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
 
 interface TopPost {
   id: string;
@@ -21,112 +25,92 @@ export function TopPosts({ posts }: TopPostsProps) {
   const theme = useTheme();
 
   return (
-    <Card style={styles.container}>
-      <Card.Content>
-        <Text variant="titleMedium" style={styles.title}>
+    <StyledView className="bg-white rounded-lg shadow-sm mb-6">
+      <StyledView className="p-4 border-b border-gray-100">
+        <StyledText className="text-lg font-medium">
           Top Performing Posts
-        </Text>
+        </StyledText>
+      </StyledView>
 
-        {posts.map((post, index) => (
-          <View key={post.id} style={styles.postCard}>
-            <View style={styles.postHeader}>
-              <Text variant="titleSmall" style={styles.rank}>
-                #{index + 1}
-              </Text>
-              <View style={styles.platforms}>
-                {post.platforms.map((platform) => (
-                  <MaterialCommunityIcons
-                    key={platform}
-                    name={platform.toLowerCase() as any}
-                    size={20}
-                    color={theme.colors.primary}
-                    style={styles.platformIcon}
-                  />
-                ))}
-              </View>
-            </View>
+      {posts.map((post, index) => (
+        <StyledView key={post.id} className="p-4 border-b border-gray-100">
+          <StyledView className="flex-row justify-between items-center mb-2">
+            <StyledText className="text-gray-500 font-medium">
+              #{index + 1}
+            </StyledText>
+            <StyledView className="flex-row">
+              {post.platforms.map((platform) => (
+                <MaterialCommunityIcons
+                  key={platform}
+                  name={platform.toLowerCase()}
+                  size={20}
+                  color={theme.colors.primary}
+                  style={{ marginLeft: 8 }}
+                />
+              ))}
+            </StyledView>
+          </StyledView>
 
-            <Text variant="bodyMedium" numberOfLines={2} style={styles.content}>
-              {post.content}
-            </Text>
+          <StyledText numberOfLines={2} className="text-gray-800 mb-3">
+            {post.content}
+          </StyledText>
 
-            <View style={styles.statsGrid}>
-              <View style={styles.statItem}>
+          <StyledView className="flex-row justify-between">
+            <StyledView className="items-center">
+              <StyledView className="flex-row items-center">
                 <MaterialCommunityIcons
                   name="heart"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <Text variant="bodySmall">{formatNumber(post.likes)}</Text>
-              </View>
-              <View style={styles.statItem}>
+                <StyledText className="ml-1 text-sm">
+                  {formatNumber(post.likes)}
+                </StyledText>
+              </StyledView>
+              <StyledText className="text-xs text-gray-500">Likes</StyledText>
+            </StyledView>
+
+            <StyledView className="items-center">
+              <StyledView className="flex-row items-center">
                 <MaterialCommunityIcons
                   name="comment"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <Text variant="bodySmall">{formatNumber(post.comments)}</Text>
-              </View>
-              <View style={styles.statItem}>
+                <StyledText className="ml-1 text-sm">
+                  {formatNumber(post.comments)}
+                </StyledText>
+              </StyledView>
+              <StyledText className="text-xs text-gray-500">
+                Comments
+              </StyledText>
+            </StyledView>
+
+            <StyledView className="items-center">
+              <StyledView className="flex-row items-center">
                 <MaterialCommunityIcons
                   name="share"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <Text variant="bodySmall">{formatNumber(post.shares)}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text
-                  variant="bodySmall"
-                  style={{ color: theme.colors.primary }}>
-                  {post.engagement_rate.toFixed(1)}%
-                </Text>
-                <Text variant="bodySmall">Engagement</Text>
-              </View>
-            </View>
-          </View>
-        ))}
-      </Card.Content>
-    </Card>
+                <StyledText className="ml-1 text-sm">
+                  {formatNumber(post.shares)}
+                </StyledText>
+              </StyledView>
+              <StyledText className="text-xs text-gray-500">Shares</StyledText>
+            </StyledView>
+
+            <StyledView className="items-center">
+              <StyledText className="text-sm text-primary-600 font-medium">
+                {post.engagement_rate.toFixed(1)}%
+              </StyledText>
+              <StyledText className="text-xs text-gray-500">
+                Engagement
+              </StyledText>
+            </StyledView>
+          </StyledView>
+        </StyledView>
+      ))}
+    </StyledView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 16,
-  },
-  title: {
-    marginBottom: 16,
-  },
-  postCard: {
-    marginBottom: 16,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-  },
-  postHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  rank: {
-    opacity: 0.7,
-  },
-  platforms: {
-    flexDirection: "row",
-  },
-  platformIcon: {
-    marginLeft: 8,
-  },
-  content: {
-    marginBottom: 12,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  statItem: {
-    alignItems: "center",
-  },
-});

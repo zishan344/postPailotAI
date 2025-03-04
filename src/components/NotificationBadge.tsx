@@ -1,30 +1,28 @@
-import { StyleSheet } from "react-native";
-import { Badge, useTheme } from "react-native-paper";
+import { View } from "react-native";
+import { Text } from "react-native-paper";
 import { useNotificationStore } from "../stores/notificationStore";
+import { styled } from "nativewind";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
 
 interface NotificationBadgeProps {
-  style?: any;
+  className?: string;
 }
 
-export function NotificationBadge({ style }: NotificationBadgeProps) {
+export function NotificationBadge({ className }: NotificationBadgeProps) {
   const { unreadCount } = useNotificationStore();
-  const theme = useTheme();
 
   if (unreadCount === 0) return null;
 
   return (
-    <Badge
-      size={20}
-      style={[styles.badge, { backgroundColor: theme.colors.error }, style]}>
-      {unreadCount > 99 ? "99+" : unreadCount}
-    </Badge>
+    <StyledView
+      className={`absolute -top-1 -right-1 min-w-[20px] h-5 
+        bg-red-500 rounded-full justify-center items-center px-1 
+        ${className || ""}`}>
+      <StyledText className="text-xs text-white font-medium">
+        {unreadCount > 99 ? "99+" : unreadCount}
+      </StyledText>
+    </StyledView>
   );
 }
-
-const styles = StyleSheet.create({
-  badge: {
-    position: "absolute",
-    top: -4,
-    right: -4,
-  },
-});
