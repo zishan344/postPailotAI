@@ -2,13 +2,22 @@ import { View } from "react-native";
 import { Text, Card, ActivityIndicator, useTheme } from "react-native-paper";
 import { LineChart, BarChart } from "react-native-chart-kit";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { useQuery } from "@tanstack/react-query";
 import { schedulingService } from "../../services/schedulingService";
 import { formatNumber, formatDate } from "../../utils";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface RecurringPostAnalyticsProps {
   postId: string;

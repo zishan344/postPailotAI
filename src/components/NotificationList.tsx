@@ -2,11 +2,23 @@ import { View, ScrollView, RefreshControl } from "react-native";
 import { Text, Button, useTheme } from "react-native-paper";
 import { NotificationItem } from "./NotificationItem";
 import { useNotificationStore } from "../stores/notificationStore";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
 
 export function NotificationList() {
   const theme = useTheme();
@@ -21,10 +33,10 @@ export function NotificationList() {
   } = useNotificationStore();
 
   return (
-    <StyledView className="flex-1 bg-white">
+    <StyledView>
       {unreadCount > 0 && (
-        <StyledView className="flex-row justify-between items-center px-4 py-2 bg-primary-50">
-          <StyledText className="text-primary-700">
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: theme.colors.primary + '50' }}>
+          <StyledText style={{ color: theme.colors.primary + '700' }}>
             {unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}
           </StyledText>
           <Button
@@ -33,11 +45,10 @@ export function NotificationList() {
             textColor={theme.colors.primary}>
             Mark all as read
           </Button>
-        </StyledView>
+        </View>
       )}
 
       <StyledScrollView
-        className="flex-1"
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
@@ -46,11 +57,11 @@ export function NotificationList() {
           />
         }>
         {notifications.length === 0 ? (
-          <StyledView className="flex-1 justify-center items-center p-8">
-            <StyledText className="text-gray-500 text-center">
+          <View style={{ justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+            <StyledText style={{ color: 'gray', textAlign: 'center' }}>
               No notifications yet
             </StyledText>
-          </StyledView>
+          </View>
         ) : (
           notifications.map((notification) => (
             <NotificationItem

@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { FAB, Portal, Modal } from "react-native-paper";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PostScheduler } from "../../src/components/scheduler/PostScheduler";
 import { ScheduledPostsList } from "../../src/components/scheduler/ScheduledPostsList";
 import { useSchedulerStore } from "../../src/stores/schedulerStore";
 
-const StyledView = styled(View);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+`;
 
 export default function SchedulerScreen() {
   const insets = useSafeAreaInsets();

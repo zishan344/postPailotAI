@@ -2,16 +2,15 @@ import { useState } from "react";
 import { View } from "react-native";
 import { TextInput, Button, Chip, Text, useTheme } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
-// import { styled } from "nativewind";
-import { createInteropElement } from "react-native-css-interop";
+import styled from 'styled-components/native';
 
 import { useSchedulerStore } from "../../stores/schedulerStore";
 import * as ImagePicker from "expo-image-picker";
 import { PostPreview } from "./PostPreview";
 import { RecurringPostSettings } from "./RecurringPostSettings";
 
-const StyledView = createInteropElement(View, {});
-const StyledText = createInteropElement(Text, {});
+const StyledView = styled.View``;
+const StyledText = styled.Text``;
 
 const PLATFORMS = ["Twitter", "LinkedIn", "Facebook", "Instagram"];
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import {
   Text,
   TextInput,
@@ -8,12 +8,33 @@ import {
   Card,
   ActivityIndicator,
 } from "react-native-paper";
-import { styled } from "nativewind";
 import { aiService } from "../../services/aiService";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+  },
+  card: {
+    marginBottom: 16,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  chip: {
+    backgroundColor: '#E0E0FF',
+  },
+  view: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  button: {
+    marginBottom: 16,
+  },
+});
 
 interface ContentOptimizerProps {
   initialContent: string;
@@ -53,30 +74,28 @@ export function ContentOptimizer({
   };
 
   return (
-    <StyledScrollView className="p-4">
-      <Card className="mb-4">
+    <ScrollView style={styles.container}>
+      <Card style={styles.card}>
         <Card.Content>
-          <StyledText className="text-lg font-medium mb-2">
-            Content Optimizer
-          </StyledText>
+          <Text style={styles.text}>Content Optimizer</Text>
           <TextInput
             multiline
             numberOfLines={4}
             value={content}
             onChangeText={setContent}
-            className="mb-4"
+            style={styles.button}
           />
           <Button
             mode="contained"
             onPress={handleOptimize}
             loading={isOptimizing}
-            className="mb-2">
+            style={styles.button}>
             Optimize Content
           </Button>
           <Button
             mode="outlined"
             onPress={handleGenerateContent}
-            className="mb-2">
+            style={styles.button}>
             Generate Content
           </Button>
         </Card.Content>
@@ -84,64 +103,43 @@ export function ContentOptimizer({
 
       {optimization && (
         <>
-          <Card className="mb-4">
+          <Card style={styles.card}>
             <Card.Content>
-              <StyledText className="font-medium mb-2">
-                Suggested Hashtags
-              </StyledText>
-              <StyledView className="flex-row flex-wrap gap-2">
+              <Text style={styles.text}>Suggested Hashtags</Text>
+              <View style={styles.view}>
                 {optimization.suggestedHashtags.map((tag) => (
-                  <Chip
-                    key={tag}
-                    onPress={() => setContent(content + " #" + tag)}>
+                  <Chip key={tag} style={styles.chip} onPress={() => setContent(content + " #" + tag)}>
                     #{tag}
                   </Chip>
                 ))}
-              </StyledView>
+              </View>
             </Card.Content>
           </Card>
 
-          <Card className="mb-4">
+          <Card style={styles.card}>
             <Card.Content>
-              <StyledText className="font-medium mb-2">
-                Content Analysis
-              </StyledText>
-              <StyledView className="mb-2">
-                <StyledText className="text-gray-600">
-                  Tone: {optimization.toneAnalysis.tone}(
-                  {optimization.toneAnalysis.confidence}% confidence)
-                </StyledText>
-              </StyledView>
-              <StyledText className="font-medium mb-2">
-                Suggested Improvements
-              </StyledText>
+              <Text style={styles.text}>Content Analysis</Text>
+              <View style={styles.view}>
+                <Text style={styles.text}>Tone: {optimization.toneAnalysis.tone}({optimization.toneAnalysis.confidence}% confidence)</Text>
+              </View>
+              <Text style={styles.text}>Suggested Improvements</Text>
               {optimization.improvements.map((improvement, index) => (
-                <StyledText key={index} className="text-gray-600 mb-1">
-                  • {improvement}
-                </StyledText>
+                <Text key={index} style={styles.text}>• {improvement}</Text>
               ))}
             </Card.Content>
           </Card>
 
-          <Card className="mb-4">
+          <Card style={styles.card}>
             <Card.Content>
-              <StyledText className="font-medium mb-2">
-                Platform-Specific Suggestions
-              </StyledText>
-              {optimization.platformSpecificSuggestions.map(
-                ({ platform, suggestions }) => (
-                  <StyledView key={platform} className="mb-3">
-                    <StyledText className="font-medium mb-1">
-                      {platform}
-                    </StyledText>
-                    {suggestions.map((suggestion, index) => (
-                      <StyledText key={index} className="text-gray-600 mb-1">
-                        • {suggestion}
-                      </StyledText>
-                    ))}
-                  </StyledView>
-                )
-              )}
+              <Text style={styles.text}>Platform-Specific Suggestions</Text>
+              {optimization.platformSpecificSuggestions.map(({ platform, suggestions }) => (
+                <View key={platform} style={styles.view}>
+                  <Text style={styles.text}>{platform}</Text>
+                  {suggestions.map((suggestion, index) => (
+                    <Text key={index} style={styles.text}>• {suggestion}</Text>
+                  ))}
+                </View>
+              ))}
             </Card.Content>
           </Card>
 
@@ -150,6 +148,6 @@ export function ContentOptimizer({
           </Button>
         </>
       )}
-    </StyledScrollView>
+    </ScrollView>
   );
 }

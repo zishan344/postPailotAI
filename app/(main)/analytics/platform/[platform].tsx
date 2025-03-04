@@ -1,14 +1,23 @@
 import { View } from "react-native";
 import { Text } from "react-native-paper";
-import { styled } from "nativewind";
 import { useLocalSearchParams } from "expo-router";
 import { PlatformAnalytics } from "../../../../src/components/analytics/PlatformAnalytics";
 import { ContentSuggestions } from "../../../../src/components/social/ContentSuggestions";
 import { useQuery } from "@tanstack/react-query";
 import { analyticsService } from "../../../../src/services/analyticsService";
+import styled from 'styled-components/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 export default function PlatformAnalyticsScreen() {
   const { platform } = useLocalSearchParams<{ platform: string }>();

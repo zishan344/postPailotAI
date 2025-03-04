@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Card, Text, Chip, IconButton } from "react-native-paper";
+import { useNotificationStore } from '../stores/notificationStore';
 
 interface PostCardProps {
   content: string;
@@ -11,10 +12,20 @@ interface PostCardProps {
 
 export function PostCard({
   content,
-  platforms,
+  platforms = [], // Provide a default empty array
   scheduledTime,
   status,
 }: PostCardProps) {
+  const initialize = useNotificationStore(state => state.initialize);
+  
+  useEffect(() => {
+    initialize();
+    
+    return () => {
+      useNotificationStore.getState().cleanup();
+    };
+  }, [initialize]);
+
   return (
     <Card style={styles.card}>
       <Card.Content>
@@ -24,7 +35,7 @@ export function PostCard({
 
         <View style={styles.footer}>
           <View style={styles.platforms}>
-            {platforms.map((platform) => (
+            {platforms && platforms.map((platform) => (
               <Chip key={platform} style={styles.platform}>
                 {platform}
               </Chip>

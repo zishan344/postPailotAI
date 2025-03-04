@@ -9,14 +9,26 @@ import {
   useTheme,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { useSchedulerStore } from "../../stores/schedulerStore";
 import { formatDate } from "../../utils";
 import { useRouter } from "expo-router";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
 
 interface RecurringPostManagerProps {
   postId: string;

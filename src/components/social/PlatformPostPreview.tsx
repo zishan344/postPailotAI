@@ -1,12 +1,26 @@
 import { View, Image } from "react-native";
 import { Text, Avatar, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { formatTimeAgo } from "../../utils";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledImage = styled(Image);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledImage = styled.Image`
+  width: 48%;
+  height: 32px;
+  border-radius: 8px;
+`;
 
 interface PlatformPostPreviewProps {
   platform: string;
@@ -27,7 +41,7 @@ export function PlatformPostPreview({
   const theme = useTheme();
 
   const renderTwitterPreview = () => (
-    <StyledView className="bg-white rounded-lg border border-gray-200 p-4">
+    <StyledView>
       <StyledView className="flex-row items-start">
         <Avatar.Image
           size={48}
@@ -39,7 +53,7 @@ export function PlatformPostPreview({
         />
         <StyledView className="flex-1 ml-3">
           <StyledView className="flex-row items-center">
-            <StyledText className="font-bold">
+            <StyledText>
               {account?.username || "Username"}
             </StyledText>
             <StyledText className="text-gray-500 ml-2">
@@ -83,7 +97,7 @@ export function PlatformPostPreview({
   );
 
   const renderLinkedInPreview = () => (
-    <StyledView className="bg-white rounded-lg border border-gray-200 p-4">
+    <StyledView>
       <StyledView className="flex-row items-center mb-3">
         <Avatar.Image
           size={48}
@@ -94,7 +108,7 @@ export function PlatformPostPreview({
           }
         />
         <StyledView className="ml-3">
-          <StyledText className="font-bold">
+          <StyledText>
             {account?.username || "Your Name"}
           </StyledText>
           <StyledText className="text-gray-500 text-sm">

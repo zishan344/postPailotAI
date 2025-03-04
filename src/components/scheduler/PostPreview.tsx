@@ -1,11 +1,25 @@
 import { View, Image } from "react-native";
 import { Text, Card, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledImage = styled(Image);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledImage = styled.Image`
+  width: 48%;
+  height: 32px;
+  border-radius: 8px;
+`;
 
 interface PostPreviewProps {
   platform: string;
@@ -24,7 +38,7 @@ export function PostPreview({
     switch (platform.toLowerCase()) {
       case "twitter":
         return (
-          <StyledView className="rounded-lg bg-white p-4 border border-gray-200">
+          <StyledView>
             <StyledView className="flex-row items-center mb-2">
               <MaterialCommunityIcons
                 name="account-circle"
@@ -53,7 +67,7 @@ export function PostPreview({
 
       case "linkedin":
         return (
-          <StyledView className="rounded-lg bg-white p-4 border border-gray-200">
+          <StyledView>
             <StyledView className="flex-row items-center mb-3">
               <MaterialCommunityIcons
                 name="account-circle"
@@ -77,7 +91,7 @@ export function PostPreview({
 
       default:
         return (
-          <StyledView className="rounded-lg bg-white p-4 border border-gray-200">
+          <StyledView>
             <StyledText className="mb-3">{content}</StyledText>
             {mediaUrls.length > 0 && (
               <StyledView className="flex-row flex-wrap gap-2">

@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { Text, Button, Card, DataTable } from "react-native-paper";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { schedulingService } from "../../services/schedulingService";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 export function ScheduledPostsManager({ userId }: { userId: string }) {
   const [scheduledPosts, setScheduledPosts] = useState<any[]>([]);

@@ -1,11 +1,7 @@
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text, IconButton, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatTimeAgo } from '../utils';
-import { styled } from 'nativewind';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 interface NotificationItemProps {
   notification: {
@@ -38,36 +34,35 @@ export function NotificationItem({
   };
 
   return (
-    <StyledView 
-      className={`flex-row items-center p-4 border-b border-gray-200 
-        ${!notification.read ? 'bg-primary-50' : 'bg-white'}`}
+    <View 
+      style={[styles.container, !notification.read && styles.unread]}
     >
-      <StyledView className="p-2 rounded-full bg-primary-100">
+      <View style={styles.iconContainer}>
         <MaterialCommunityIcons
           name={getIcon(notification.type)}
           size={24}
           color={theme.colors.primary}
         />
-      </StyledView>
+      </View>
 
-      <StyledView className="flex-1 ml-3">
-        <StyledText className="font-medium text-gray-900">
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>
           {notification.title}
-        </StyledText>
-        <StyledText className="text-sm text-gray-600 mt-1">
+        </Text>
+        <Text style={styles.body}>
           {notification.body}
-        </StyledText>
-        <StyledText className="text-xs text-gray-500 mt-1">
+        </Text>
+        <Text style={styles.timestamp}>
           {formatTimeAgo(notification.created_at)}
-        </StyledText>
-      </StyledView>
+        </Text>
+      </View>
 
-      <StyledView className="flex-row items-center">
+      <View style={styles.actionsContainer}>
         {!notification.read && (
           <IconButton
             icon="check-circle"
             size={20}
-            className="mr-1"
+            style={styles.markAsReadButton}
             onPress={() => onMarkAsRead(notification.id)}
           />
         )}
@@ -77,11 +72,51 @@ export function NotificationItem({
           iconColor={theme.colors.error}
           onPress={() => onDelete(notification.id)}
         />
-      </StyledView>
-    </StyledView>
+      </View>
+    </View>
   );
 }
 
-    </StyledView>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+  },
+  unread: {
+    backgroundColor: '#EBF8FF',
+  },
+  iconContainer: {
+    padding: 8,
+    borderRadius: 9999,
+    backgroundColor: '#DBEAFE',
+  },
+  contentContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  title: {
+    fontWeight: '500',
+    color: '#1F2937',
+  },
+  body: {
+    fontSize: 14,
+    color: '#4B5563',
+    marginTop: 4,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  markAsReadButton: {
+    marginRight: 4,
+  },
+});

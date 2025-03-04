@@ -136,12 +136,12 @@ export const generateContent = async ({
 }: GenerationParams): Promise<string> => {
   try {
     const response = await fetch(
-      `${EXPO_PUBLIC_DEEPSEEK_API_URL}/chat/completions`,
+      `${EXPO_PUBLIC_OPENROUTER_API_KEY}/chat/completions`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${EXPO_PUBLIC_DEEPSEEK_API_KEY}`,
+          Authorization: `Bearer ${EXPO_PUBLIC_OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
           model: "deepseek-chat",
@@ -179,12 +179,12 @@ export const generateSuggestions = async (
 ): Promise<string[]> => {
   try {
     const response = await fetch(
-      `${EXPO_PUBLIC_DEEPSEEK_API_URL}/chat/completions`,
+      `${EXPO_PUBLIC_OPENROUTER_API_KEY}/chat/completions`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${EXPO_PUBLIC_DEEPSEEK_API_KEY}`,
+          Authorization: `Bearer ${EXPO_PUBLIC_OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
           model: "deepseek-chat",

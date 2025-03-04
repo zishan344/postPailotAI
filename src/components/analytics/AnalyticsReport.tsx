@@ -2,6 +2,19 @@ import { ScrollView, View, StyleSheet } from "react-native";
 import { Card, Text, List, Button, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatNumber, formatDate } from "../../utils";
+import styled from 'styled-components/native';
+
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface ReportData {
   summary: {

@@ -3,6 +3,19 @@ import { Card, Text, List, useTheme } from "react-native-paper";
 import { useAnalyticsStore } from "../../stores/analyticsStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatNumber } from "../../utils";
+import styled from 'styled-components/native';
+
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 export function PlatformPerformance() {
   const { platformStats } = useAnalyticsStore();

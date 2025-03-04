@@ -1,16 +1,28 @@
 import { View, ScrollView, RefreshControl, Portal, Modal } from "react-native";
 import { Text, Card, Button, IconButton, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { useSchedulerStore } from "../../stores/schedulerStore";
 import { formatTimeAgo } from "../../utils";
 import { RecurringPostManager } from "./RecurringPostManager";
 import { useState } from "react";
 import { PostScheduler } from "./PostScheduler";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
 
 export function ScheduledPostsList() {
   const [editingPostId, setEditingPostId] = useState<string | null>(null);

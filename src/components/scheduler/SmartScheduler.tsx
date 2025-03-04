@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { Text, Card, Button, DataTable, Chip } from "react-native-paper";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { aiService } from "../../services/aiService";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface SmartSchedulerProps {
   onScheduleSelected: (schedule: { day: string; hour: number }) => void;

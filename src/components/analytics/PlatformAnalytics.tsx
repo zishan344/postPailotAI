@@ -2,12 +2,22 @@ import { View, ScrollView } from "react-native";
 import { Text, Card, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LineChart, BarChart } from "react-native-chart-kit";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { formatNumber } from "../../utils";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const StyledScrollView = styled.ScrollView;
 
 interface PlatformMetrics {
   date: string;

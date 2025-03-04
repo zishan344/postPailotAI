@@ -1,11 +1,33 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { Text, Card, Chip, Button, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledScrollView = styled(ScrollView);
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+  },
+  card: {
+    marginRight: 16,
+    width: 320,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  chip: {
+    backgroundColor: '#E0E0FF',
+  },
+  view: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  button: {
+    marginBottom: 16,
+  },
+});
 
 interface ContentSuggestion {
   id: string;
@@ -29,77 +51,42 @@ export function ContentSuggestions({
   const theme = useTheme();
 
   return (
-    <StyledView>
-      <StyledText className="text-xl font-semibold mb-4 px-4">
-        Content Suggestions
-      </StyledText>
+    <View style={styles.container}>
+      <Text style={styles.text}>Content Suggestions</Text>
 
-      <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {suggestions.map((suggestion) => (
-          <Card
-            key={suggestion.id}
-            className="mr-4 w-80"
-            style={{ marginLeft: suggestion === suggestions[0] ? 16 : 0 }}>
+          <Card key={suggestion.id} style={[styles.card, { marginLeft: suggestion === suggestions[0] ? 16 : 0 }]}>
             <Card.Content>
-              <StyledText className="text-lg font-medium mb-2">
-                {suggestion.title}
-              </StyledText>
-
-              <StyledText className="text-gray-600 mb-3">
-                {suggestion.content}
-              </StyledText>
-
-              <StyledView className="flex-row flex-wrap gap-2 mb-3">
+              <Text style={styles.text}>{suggestion.title}</Text>
+              <Text style={styles.text}>{suggestion.content}</Text>
+              <View style={styles.view}>
                 {suggestion.hashtags.map((tag) => (
-                  <Chip key={tag} className="bg-primary-50">
+                  <Chip key={tag} style={styles.chip}>
                     #{tag}
                   </Chip>
                 ))}
-              </StyledView>
-
-              <StyledView className="flex-row items-center mb-3">
-                <MaterialCommunityIcons
-                  name="clock-outline"
-                  size={20}
-                  color={theme.colors.primary}
-                />
-                <StyledText className="ml-2 text-gray-600">
-                  Best time to post: {suggestion.bestTime}
-                </StyledText>
-              </StyledView>
-
-              <StyledView className="flex-row items-center mb-3">
-                <MaterialCommunityIcons
-                  name="trending-up"
-                  size={20}
-                  color={theme.colors.primary}
-                />
-                <StyledText className="ml-2 text-gray-600">
-                  Predicted engagement: {suggestion.predictedEngagement}%
-                </StyledText>
-              </StyledView>
-
-              <StyledView className="flex-row mb-4">
+              </View>
+              <View style={styles.view}>
+                <MaterialCommunityIcons name="clock-outline" size={20} color={theme.colors.primary} />
+                <Text style={styles.text}>Best time to post: {suggestion.bestTime}</Text>
+              </View>
+              <View style={styles.view}>
+                <MaterialCommunityIcons name="trending-up" size={20} color={theme.colors.primary} />
+                <Text style={styles.text}>Predicted engagement: {suggestion.predictedEngagement}%</Text>
+              </View>
+              <View style={styles.view}>
                 {suggestion.platforms.map((platform) => (
-                  <MaterialCommunityIcons
-                    key={platform}
-                    name={platform.toLowerCase()}
-                    size={24}
-                    color={theme.colors.primary}
-                    style={{ marginRight: 8 }}
-                  />
+                  <MaterialCommunityIcons key={platform} name={platform.toLowerCase()} size={24} color={theme.colors.primary} style={{ marginRight: 8 }} />
                 ))}
-              </StyledView>
-
-              <Button
-                mode="contained"
-                onPress={() => onUseSuggestion(suggestion)}>
+              </View>
+              <Button mode="contained" onPress={() => onUseSuggestion(suggestion)}>
                 Use This Template
               </Button>
             </Card.Content>
           </Card>
         ))}
-      </StyledScrollView>
-    </StyledView>
+      </ScrollView>
+    </View>
   );
 }

@@ -1,9 +1,18 @@
 import { View } from "react-native";
 import { Text, Checkbox, Button, SegmentedButtons } from "react-native-paper";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface RecurringPostSettingsProps {
   isRecurring: boolean;

@@ -1,11 +1,20 @@
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { styled } from "nativewind";
+import styled from 'styled-components/native';
 import { formatNumber } from "../../utils";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface TopPost {
   id: string;
@@ -25,20 +34,20 @@ export function TopPosts({ posts }: TopPostsProps) {
   const theme = useTheme();
 
   return (
-    <StyledView className="bg-white rounded-lg shadow-sm mb-6">
-      <StyledView className="p-4 border-b border-gray-100">
-        <StyledText className="text-lg font-medium">
+    <StyledView>
+      <StyledView>
+        <StyledText>
           Top Performing Posts
         </StyledText>
       </StyledView>
 
       {posts.map((post, index) => (
-        <StyledView key={post.id} className="p-4 border-b border-gray-100">
-          <StyledView className="flex-row justify-between items-center mb-2">
-            <StyledText className="text-gray-500 font-medium">
+        <StyledView key={post.id}>
+          <StyledView>
+            <StyledText>
               #{index + 1}
             </StyledText>
-            <StyledView className="flex-row">
+            <StyledView>
               {post.platforms.map((platform) => (
                 <MaterialCommunityIcons
                   key={platform}
@@ -51,60 +60,60 @@ export function TopPosts({ posts }: TopPostsProps) {
             </StyledView>
           </StyledView>
 
-          <StyledText numberOfLines={2} className="text-gray-800 mb-3">
+          <StyledText numberOfLines={2}>
             {post.content}
           </StyledText>
 
-          <StyledView className="flex-row justify-between">
-            <StyledView className="items-center">
-              <StyledView className="flex-row items-center">
+          <StyledView>
+            <StyledView>
+              <StyledView>
                 <MaterialCommunityIcons
                   name="heart"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <StyledText className="ml-1 text-sm">
+                <StyledText>
                   {formatNumber(post.likes)}
                 </StyledText>
               </StyledView>
-              <StyledText className="text-xs text-gray-500">Likes</StyledText>
+              <StyledText>Likes</StyledText>
             </StyledView>
 
-            <StyledView className="items-center">
-              <StyledView className="flex-row items-center">
+            <StyledView>
+              <StyledView>
                 <MaterialCommunityIcons
                   name="comment"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <StyledText className="ml-1 text-sm">
+                <StyledText>
                   {formatNumber(post.comments)}
                 </StyledText>
               </StyledView>
-              <StyledText className="text-xs text-gray-500">
+              <StyledText>
                 Comments
               </StyledText>
             </StyledView>
 
-            <StyledView className="items-center">
-              <StyledView className="flex-row items-center">
+            <StyledView>
+              <StyledView>
                 <MaterialCommunityIcons
                   name="share"
                   size={16}
                   color={theme.colors.primary}
                 />
-                <StyledText className="ml-1 text-sm">
+                <StyledText>
                   {formatNumber(post.shares)}
                 </StyledText>
               </StyledView>
-              <StyledText className="text-xs text-gray-500">Shares</StyledText>
+              <StyledText>Shares</StyledText>
             </StyledView>
 
-            <StyledView className="items-center">
-              <StyledText className="text-sm text-primary-600 font-medium">
+            <StyledView>
+              <StyledText>
                 {post.engagement_rate.toFixed(1)}%
               </StyledText>
-              <StyledText className="text-xs text-gray-500">
+              <StyledText>
                 Engagement
               </StyledText>
             </StyledView>

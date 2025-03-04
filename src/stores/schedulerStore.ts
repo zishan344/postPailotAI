@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
 import { schedulingService } from "../services/schedulingService";
+import { useEffect } from 'react';
 
 interface RecurringPostInstance {
   id: string;
@@ -190,3 +191,11 @@ export const useSchedulerStore = create<SchedulerState>((set, get) => ({
     }
   },
 }));
+
+// Move state updates to useEffect
+useEffect(() => {
+  const fetchData = async () => {
+    await useSchedulerStore.getState().fetchScheduledPosts();
+  };
+  fetchData();
+}, []);

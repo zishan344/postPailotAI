@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Animated } from "react-native";
 import {
   TextInput,
   Button,
@@ -31,6 +31,11 @@ export default function PostCreationScreen() {
     useAIContentStore();
   const router = useRouter();
   const theme = useTheme();
+
+  // Configure animation settings for ScrollView and Modal
+  const scrollViewConfig = {
+    useNativeDriver: false // We need to set this to false since native driver isn't available
+  };
 
   const handleGenerate = async () => {
     try {
@@ -67,7 +72,7 @@ export default function PostCreationScreen() {
       await schedulingService.schedulePost({
         content,
         platforms: selectedPlatforms,
-        scheduledDate,
+        scheduledFor: scheduledDate,  // Changed from scheduledDate to scheduledFor
         mediaUrls,
       });
       setShowScheduleModal(false);
@@ -81,7 +86,13 @@ export default function PostCreationScreen() {
 
   return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView 
+        style={styles.container}
+        contentInsetAdjustmentBehavior="automatic"
+        scrollEventThrottle={16}
+        // Apply animation configuration
+        contentOffset={{ x: 0, y: 0 }}
+      >
         <Card style={styles.card}>
           <Card.Content>
             <PlatformSelector
@@ -133,7 +144,12 @@ export default function PostCreationScreen() {
                   Get Suggestions
                 </Button>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                // Apply animation configuration
+                scrollEventThrottle={16}
+              >
                 {suggestions.map((suggestion, index) => (
                   <Chip
                     key={index}
@@ -168,7 +184,10 @@ export default function PostCreationScreen() {
         <Modal
           visible={showScheduleModal}
           onDismiss={() => setShowScheduleModal(false)}
-          contentContainerStyle={styles.modalContainer}>
+          contentContainerStyle={styles.modalContainer}
+          // Use animation props that don't require native driver
+          animationType="fade"
+        >
           <Card>
             <Card.Content>
               <Text variant="titleLarge" style={styles.modalTitle}>

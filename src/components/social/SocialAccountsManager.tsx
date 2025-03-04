@@ -10,9 +10,10 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { socialMediaService } from "../../services/socialMediaService";
-import { createInteropElement } from "react-native-css-interop";
-const StyledView = createInteropElement(View, {});
-const StyledText = createInteropElement(Text, {});
+import styled from 'styled-components/native';
+
+const StyledView = styled.View``;
+const StyledText = styled.Text``;
 
 export function SocialAccountsManager() {
   const theme = useTheme();

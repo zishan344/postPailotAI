@@ -1,10 +1,20 @@
 import { View, Dimensions } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { LineChart } from "react-native-chart-kit";
-import { styled } from "nativewind";
+import { useEffect, useState } from "react";
+import styled from 'styled-components/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface EngagementData {
   date: string;
@@ -17,26 +27,33 @@ interface EngagementChartProps {
 
 export function EngagementChart({ data }: EngagementChartProps) {
   const theme = useTheme();
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [{ data: [] }],
+  });
+  
+  useEffect(() => {
+    setChartData({
+      labels: data.map((stat) =>
+        new Date(stat.date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        })
+      ),
+      datasets: [
+        {
+          data: data.map((stat) => stat.engagement_rate),
+          color: () => theme.colors.primary,
+        },
+      ],
+    });
+  }, [data, theme.colors.primary]);
+
   const screenWidth = Dimensions.get("window").width;
 
-  const chartData = {
-    labels: data.map((stat) =>
-      new Date(stat.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
-    ),
-    datasets: [
-      {
-        data: data.map((stat) => stat.engagement_rate),
-        color: () => theme.colors.primary,
-      },
-    ],
-  };
-
   return (
-    <StyledView className="mb-6">
-      <StyledText className="text-lg font-medium mb-4 px-4">
+    <StyledView>
+      <StyledText>
         Engagement Rate Over Time
       </StyledText>
 

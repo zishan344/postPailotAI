@@ -5,6 +5,19 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PieChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 import { formatNumber } from "../../utils";
+import styled from 'styled-components/native';
+
+const StyledView = styled.View`
+  background-color: white;
+  border-radius: 8px;
+  shadow-opacity: 0.1;
+  margin-bottom: 24px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 interface PlatformStat {
   platform: string;
